@@ -5,23 +5,27 @@ import './css/main.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import generateId from './generateId.js'
+
 import ToolBar from './ToolBar.jsx';
 import Canv from './Canv.jsx';
 
 class App extends React.Component {
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
             canvas:{
-                rects:[
-                    {
+                rects:{
+                    "1":{
                         id: 1,
                         x:0,
                         y:0,
                         width:100,
-                        height:100
+                        height:100,
+                        color: "green"
                     }
-                ]
+                },
+                selected: "1"
             }
         };
     };
@@ -34,38 +38,74 @@ class App extends React.Component {
         
     };
     
-    generateId(){
-        let degree = 3;
-        var randomNumber = "";
-        for(let i = 0; i < degree; i++){
-            randomNumber += Math.floor(Math.random()*10);
-        }
-        let timestamp = Date.now().toString();
-        return timestamp+randomNumber;
-    }
-    
     handleAddRectangle(){
-        var rect = {
-            id: this.generateId(),
+        let id = generateId();
+        let rect = {
+            id: id,
             x:0,
             y:0,
             width:"100",
-            height:"100"
+            height:"100",
+            color: "black"
         };
-        console.log(rect.id);
-        this.setState(prevstate => ({
-            canvas:{
-                rects: [...prevstate.canvas.rects, rect]
-            }
-        }));
+        
+        this.setState(prevstate => {
+            let rects = Object.assign({}, prevstate.canvas.rects);
+            rects[id] = rect;
+            return {
+                canvas:{
+                    rects: rects,
+                    selected: id
+                }
+            };
+        });
     }
+    
+    handleDragEnd(e, id){
+        this.setState(prevstate => {
+            let rects = Object.assign({}, prevstate.canvas.rects);
+            let rect = rects[id];
+            rect.x = e.target.attrs.x;
+            rect.y = e.target.attrs.y;
+            return {
+                canvas:{
+                    rects: rects,
+                    selected: prevstate.canvas.selected
+                }
+            };
+        });
+    }
+    
+    handleDragMove(e, id) {
+        
+    }
+    
+    handleClick(e, id) {
+        this.setState(prevstate => {
+            return {
+                canvas:{
+                    rects: prevstate.canvas.rects,
+                    selected: id
+                }
+            };
+        });
+    }
+    
+    
     
     render() {
         return (
             <div>
                 <h2>Editor</h2>
-                <ToolBar onRectangle={this.handleAddRectangle.bind(this)}/>
-                <Canv canvas={this.state.canvas}/>
+                <ToolBar 
+                    onRectangle={this.handleAddRectangle.bind(this)} 
+                />
+                <Canv 
+                    canvas={this.state.canvas}
+                    handleDragEnd={this.handleDragEnd.bind(this)}
+                    handleDragMove={this.handleDragMove.bind(this)}
+                    handleClick={this.handleClick.bind(this)}
+                />
             </div>
         );
     };

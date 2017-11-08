@@ -1934,6 +1934,10 @@ var _reactDom = __webpack_require__(8);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _generateId = __webpack_require__(48);
+
+var _generateId2 = _interopRequireDefault(_generateId);
+
 var _ToolBar = __webpack_require__(34);
 
 var _ToolBar2 = _interopRequireDefault(_ToolBar);
@@ -1943,8 +1947,6 @@ var _Canv = __webpack_require__(39);
 var _Canv2 = _interopRequireDefault(_Canv);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1962,13 +1964,17 @@ var App = function (_React$Component) {
 
         _this.state = {
             canvas: {
-                rects: [{
-                    id: 1,
-                    x: 0,
-                    y: 0,
-                    width: 100,
-                    height: 100
-                }]
+                rects: {
+                    "1": {
+                        id: 1,
+                        x: 0,
+                        y: 0,
+                        width: 100,
+                        height: 100,
+                        color: "green"
+                    }
+                },
+                selected: "1"
             }
         };
         return _this;
@@ -1981,31 +1987,56 @@ var App = function (_React$Component) {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {}
     }, {
-        key: 'generateId',
-        value: function generateId() {
-            var degree = 3;
-            var randomNumber = "";
-            for (var i = 0; i < degree; i++) {
-                randomNumber += Math.floor(Math.random() * 10);
-            }
-            var timestamp = Date.now().toString();
-            return timestamp + randomNumber;
-        }
-    }, {
         key: 'handleAddRectangle',
         value: function handleAddRectangle() {
+            var id = (0, _generateId2.default)();
             var rect = {
-                id: this.generateId(),
+                id: id,
                 x: 0,
                 y: 0,
                 width: "100",
-                height: "100"
+                height: "100",
+                color: "black"
             };
-            console.log(rect.id);
+
+            this.setState(function (prevstate) {
+                var rects = Object.assign({}, prevstate.canvas.rects);
+                rects[id] = rect;
+                return {
+                    canvas: {
+                        rects: rects,
+                        selected: id
+                    }
+                };
+            });
+        }
+    }, {
+        key: 'handleDragEnd',
+        value: function handleDragEnd(e, id) {
+            this.setState(function (prevstate) {
+                var rects = Object.assign({}, prevstate.canvas.rects);
+                var rect = rects[id];
+                rect.x = e.target.attrs.x;
+                rect.y = e.target.attrs.y;
+                return {
+                    canvas: {
+                        rects: rects,
+                        selected: prevstate.canvas.selected
+                    }
+                };
+            });
+        }
+    }, {
+        key: 'handleDragMove',
+        value: function handleDragMove(e, id) {}
+    }, {
+        key: 'handleClick',
+        value: function handleClick(e, id) {
             this.setState(function (prevstate) {
                 return {
                     canvas: {
-                        rects: [].concat(_toConsumableArray(prevstate.canvas.rects), [rect])
+                        rects: prevstate.canvas.rects,
+                        selected: id
                     }
                 };
             });
@@ -2021,8 +2052,15 @@ var App = function (_React$Component) {
                     null,
                     'Editor'
                 ),
-                _react2.default.createElement(_ToolBar2.default, { onRectangle: this.handleAddRectangle.bind(this) }),
-                _react2.default.createElement(_Canv2.default, { canvas: this.state.canvas })
+                _react2.default.createElement(_ToolBar2.default, {
+                    onRectangle: this.handleAddRectangle.bind(this)
+                }),
+                _react2.default.createElement(_Canv2.default, {
+                    canvas: this.state.canvas,
+                    handleDragEnd: this.handleDragEnd.bind(this),
+                    handleDragMove: this.handleDragMove.bind(this),
+                    handleClick: this.handleClick.bind(this)
+                })
             );
         }
     }]);
@@ -22009,11 +22047,6 @@ var ToolBar = function (_React$Component) {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {}
     }, {
-        key: 'handleCircle',
-        value: function handleCircle() {
-            alert("dsadas");
-        }
-    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
@@ -22026,7 +22059,7 @@ var ToolBar = function (_React$Component) {
                 ),
                 _react2.default.createElement(
                     'button',
-                    { onClick: this.handleCircle.bind(this) },
+                    null,
                     'Circle'
                 ),
                 _react2.default.createElement(
@@ -22632,6 +22665,10 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactKonva = __webpack_require__(17);
 
+var _Selected = __webpack_require__(49);
+
+var _Selected2 = _interopRequireDefault(_Selected);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22661,17 +22698,66 @@ var Canv = function (_React$Component) {
     }, {
         key: 'renderRect',
         value: function renderRect() {
-            return this.props.canvas.rects.map(function (rect) {
-                return _react2.default.createElement(_reactKonva.Rect, {
-                    x: rect.x,
-                    y: rect.y,
-                    key: rect.id,
-                    width: rect.height,
-                    height: rect.height,
-                    fill: 'black',
-                    draggable: 'true'
-                });
-            });
+            var _this2 = this;
+
+            var rects = this.props.canvas.rects;
+            var res = [];
+
+            var _loop = function _loop(id) {
+                var rect = rects[id];
+                if (_this2.props.canvas.selected == id) {
+                    res.push(_react2.default.createElement(
+                        _reactKonva.Group,
+                        {
+                            x: rect.x,
+                            y: rect.y,
+                            draggable: true,
+                            onClick: function onClick(e) {
+                                return _this2.props.handleClick(e, rect.id);
+                            },
+                            onDragMove: function onDragMove(e) {
+                                return _this2.props.handleDragMove(e, rect.id);
+                            },
+                            onDragEnd: function onDragEnd(e) {
+                                return _this2.props.handleDragEnd(e, rect.id);
+                            }
+                        },
+                        _react2.default.createElement(_Selected2.default, { canvas: _this2.props.canvas, size: 1 }),
+                        _react2.default.createElement(_reactKonva.Rect, {
+                            x: 0,
+                            y: 0,
+                            key: rect.id,
+                            width: rect.height,
+                            height: rect.height,
+                            fill: rect.color
+                        })
+                    ));
+                } else {
+                    res.push(_react2.default.createElement(_reactKonva.Rect, {
+                        x: rect.x,
+                        y: rect.y,
+                        key: rect.id,
+                        width: rect.height,
+                        height: rect.height,
+                        fill: rect.color,
+                        draggable: false,
+                        onClick: function onClick(e) {
+                            return _this2.props.handleClick(e, rect.id);
+                        },
+                        onDragMove: function onDragMove(e) {
+                            return _this2.props.handleDragMove(e, rect.id);
+                        },
+                        onDragEnd: function onDragEnd(e) {
+                            return _this2.props.handleDragEnd(e, rect.id);
+                        }
+                    }));
+                }
+            };
+
+            for (var id in rects) {
+                _loop(id);
+            };
+            return res;
         }
     }, {
         key: 'render',
@@ -48286,6 +48372,117 @@ exports.push([module.i, ".canv {\n    border: 1px solid #000000;\n    width: 800
 
 // exports
 
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = generateId;
+function generateId() {
+    var degree = 3;
+    var randomNumber = "";
+    for (var i = 0; i < degree; i++) {
+        randomNumber += Math.floor(Math.random() * 10);
+    }
+    var timestamp = Date.now().toString();
+    return timestamp + randomNumber;
+}
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+__webpack_require__(12);
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(8);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _reactKonva = __webpack_require__(17);
+
+var _generateId = __webpack_require__(48);
+
+var _generateId2 = _interopRequireDefault(_generateId);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Selected = function (_React$Component) {
+    _inherits(Selected, _React$Component);
+
+    function Selected(props) {
+        _classCallCheck(this, Selected);
+
+        var _this = _possibleConstructorReturn(this, (Selected.__proto__ || Object.getPrototypeOf(Selected)).call(this, props));
+
+        _this.state = {};
+        return _this;
+    }
+
+    _createClass(Selected, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {}
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {}
+    }, {
+        key: 'render',
+        value: function render() {
+            var id = this.props.canvas.selected;
+            var target = this.props.canvas.rects[id];
+            var size = this.props.size;
+
+            var x1 = +0 - size / 2;
+            var y1 = +0 - size / 2;
+
+            var x2 = +0 + +target.width + size / 2;
+            var y2 = +0 - size / 2;
+
+            var x3 = +0 + +target.width + size / 2;
+            var y3 = +0 + +target.height + size / 2;
+
+            var x4 = +0 - size / 2;
+            var y4 = +0 + +target.height + size / 2;
+            //#0099e4'
+            var dashSize = 3;
+            return _react2.default.createElement(_reactKonva.Line, {
+                points: [x1, y1, x2, y2, x3, y3, x4, y4, x1, y1],
+                stroke: '#007bff',
+                strokeWidth: size,
+                dash: [dashSize * 3, dashSize]
+            });
+        }
+    }]);
+
+    return Selected;
+}(_react2.default.Component);
+
+exports.default = Selected;
+;
 
 /***/ })
 /******/ ]);

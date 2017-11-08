@@ -6,6 +6,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Layer, Rect, Stage, Group} from 'react-konva';
 
+import Selected from './Selected.jsx';
+
 export default class Canv extends React.Component {
     constructor(props){
         super(props);
@@ -21,17 +23,49 @@ export default class Canv extends React.Component {
     };
     
     renderRect(){
-        return this.props.canvas.rects.map((rect) =>
-            <Rect
-                x={rect.x}
-                y={rect.y}
-                key={rect.id}
-                width={rect.height}
-                height={rect.height}
-                fill="black"
-                draggable="true"
-            />
-        )
+        let rects = this.props.canvas.rects;
+        let res = [];
+        for(let id in rects){
+            let rect = rects[id];
+            if(this.props.canvas.selected == id){
+                res.push(
+                    <Group
+                        x={rect.x}
+                        y={rect.y}
+                        draggable={true} 
+                        onClick={(e) => this.props.handleClick(e, rect.id)}
+                        onDragMove={(e) => this.props.handleDragMove(e, rect.id)}
+                        onDragEnd={(e) => this.props.handleDragEnd(e, rect.id)}
+                    >
+                        <Selected canvas={this.props.canvas}  size={1}/>
+                        <Rect
+                            x={0}
+                            y={0}
+                            key={rect.id}
+                            width={rect.height}
+                            height={rect.height}
+                            fill={rect.color}
+                        />
+                    </Group>
+                );
+            } else {
+                res.push(
+                    <Rect
+                        x={rect.x}
+                        y={rect.y}
+                        key={rect.id}
+                        width={rect.height}
+                        height={rect.height}
+                        fill={rect.color}
+                        draggable={false}
+                        onClick={(e) => this.props.handleClick(e, rect.id)}
+                        onDragMove={(e) => this.props.handleDragMove(e, rect.id)}
+                        onDragEnd={(e) => this.props.handleDragEnd(e, rect.id)}
+                    />        
+                );
+            }
+        };
+        return res;
     }
     
     render() {

@@ -19,9 +19,6 @@ export default class ToolBar extends React.Component {
         
     };
     
-    handleCircle(){
-        alert("dsadas");
-    }
     
     render() {
         return (
@@ -29,7 +26,7 @@ export default class ToolBar extends React.Component {
                 <button onClick={this.props.onRectangle}>
                     Rectangle
                 </button>
-                <button onClick={this.handleCircle.bind(this)}>
+                <button>
                     Circle
                 </button>
                 <button>
