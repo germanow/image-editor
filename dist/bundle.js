@@ -1924,6 +1924,8 @@ module.exports = ExecutionEnvironment;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+__webpack_require__(46);
+
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
@@ -1942,6 +1944,8 @@ var _Canv2 = _interopRequireDefault(_Canv);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -1956,7 +1960,17 @@ var App = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-        _this.state = {};
+        _this.state = {
+            canvas: {
+                rects: [{
+                    id: 1,
+                    x: 0,
+                    y: 0,
+                    width: 100,
+                    height: 100
+                }]
+            }
+        };
         return _this;
     }
 
@@ -1966,6 +1980,36 @@ var App = function (_React$Component) {
     }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {}
+    }, {
+        key: 'generateId',
+        value: function generateId() {
+            var degree = 3;
+            var randomNumber = "";
+            for (var i = 0; i < degree; i++) {
+                randomNumber += Math.floor(Math.random() * 10);
+            }
+            var timestamp = Date.now().toString();
+            return timestamp + randomNumber;
+        }
+    }, {
+        key: 'handleAddRectangle',
+        value: function handleAddRectangle() {
+            var rect = {
+                id: this.generateId(),
+                x: 0,
+                y: 0,
+                width: "100",
+                height: "100"
+            };
+            console.log(rect.id);
+            this.setState(function (prevstate) {
+                return {
+                    canvas: {
+                        rects: [].concat(_toConsumableArray(prevstate.canvas.rects), [rect])
+                    }
+                };
+            });
+        }
     }, {
         key: 'render',
         value: function render() {
@@ -1977,8 +2021,8 @@ var App = function (_React$Component) {
                     null,
                     'Editor'
                 ),
-                _react2.default.createElement(_ToolBar2.default, null),
-                _react2.default.createElement(_Canv2.default, null)
+                _react2.default.createElement(_ToolBar2.default, { onRectangle: this.handleAddRectangle.bind(this) }),
+                _react2.default.createElement(_Canv2.default, { canvas: this.state.canvas })
             );
         }
     }]);
@@ -21965,6 +22009,11 @@ var ToolBar = function (_React$Component) {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {}
     }, {
+        key: 'handleCircle',
+        value: function handleCircle() {
+            alert("dsadas");
+        }
+    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
@@ -21972,17 +22021,17 @@ var ToolBar = function (_React$Component) {
                 { id: 'toolbar', className: 'btn-toolbar', role: 'toolbar' },
                 _react2.default.createElement(
                     'button',
-                    { type: 'button', className: 'btn btn-default', 'aria-label': 'Left Align' },
+                    { onClick: this.props.onRectangle },
                     'Rectangle'
                 ),
                 _react2.default.createElement(
                     'button',
-                    { type: 'button', className: 'btn btn-default', 'aria-label': 'Left Align' },
+                    { onClick: this.handleCircle.bind(this) },
                     'Circle'
                 ),
                 _react2.default.createElement(
                     'button',
-                    { type: 'button', className: 'btn btn-default', 'aria-label': 'Left Align' },
+                    null,
                     'Image'
                 )
             );
@@ -22583,10 +22632,6 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactKonva = __webpack_require__(17);
 
-var _CustomRect = __webpack_require__(45);
-
-var _CustomRect2 = _interopRequireDefault(_CustomRect);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22614,16 +22659,35 @@ var Canv = function (_React$Component) {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {}
     }, {
+        key: 'renderRect',
+        value: function renderRect() {
+            return this.props.canvas.rects.map(function (rect) {
+                return _react2.default.createElement(_reactKonva.Rect, {
+                    x: rect.x,
+                    y: rect.y,
+                    key: rect.id,
+                    width: rect.height,
+                    height: rect.height,
+                    fill: 'black',
+                    draggable: 'true'
+                });
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
 
             return _react2.default.createElement(
-                _reactKonva.Stage,
-                { width: 700, height: 700 },
+                'div',
+                { className: 'canv' },
                 _react2.default.createElement(
-                    _reactKonva.Layer,
-                    null,
-                    _react2.default.createElement(_CustomRect2.default, null)
+                    _reactKonva.Stage,
+                    { width: 800, height: 600 },
+                    _react2.default.createElement(
+                        _reactKonva.Layer,
+                        null,
+                        this.renderRect()
+                    )
                 )
             );
         }
@@ -48178,82 +48242,50 @@ return ($$$reconciler || ($$$reconciler = module.exports))(config);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 45 */
+/* 45 */,
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(47);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(37)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!./main.css", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!./main.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(36)(undefined);
+// imports
 
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
+// module
+exports.push([module.i, ".canv {\n    border: 1px solid #000000;\n    width: 800px;\n    height: 600px;\n}", ""]);
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+// exports
 
-__webpack_require__(12);
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactDom = __webpack_require__(8);
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
-var _reactKonva = __webpack_require__(17);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CustomRect = function (_React$Component) {
-    _inherits(CustomRect, _React$Component);
-
-    function CustomRect(props) {
-        _classCallCheck(this, CustomRect);
-
-        var _this = _possibleConstructorReturn(this, (CustomRect.__proto__ || Object.getPrototypeOf(CustomRect)).call(this, props));
-
-        _this.state = { color: 'red' };
-        return _this;
-    }
-
-    _createClass(CustomRect, [{
-        key: 'handleClick',
-        value: function handleClick() {
-            alert('dsadas');
-        }
-    }, {
-        key: 'componentDidMount',
-        value: function componentDidMount() {}
-    }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {}
-    }, {
-        key: 'render',
-        value: function render() {
-
-            return _react2.default.createElement(_reactKonva.Rect, {
-                x: 10,
-                y: 10,
-                width: 50,
-                height: 50,
-                fill: this.state.color,
-                shadowBlur: 5,
-                onClick: this.handleClick
-            });
-        }
-    }]);
-
-    return CustomRect;
-}(_react2.default.Component);
-
-exports.default = CustomRect;
-;
 
 /***/ })
 /******/ ]);

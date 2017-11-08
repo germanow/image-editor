@@ -6,8 +6,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Layer, Rect, Stage, Group} from 'react-konva';
 
-import CustomRect from './CustomRect.jsx';
-
 export default class Canv extends React.Component {
     constructor(props){
         super(props);
@@ -22,14 +20,30 @@ export default class Canv extends React.Component {
         
     };
     
+    renderRect(){
+        return this.props.canvas.rects.map((rect) =>
+            <Rect
+                x={rect.x}
+                y={rect.y}
+                key={rect.id}
+                width={rect.height}
+                height={rect.height}
+                fill="black"
+                draggable="true"
+            />
+        )
+    }
+    
     render() {
         
         return (
-            <Stage width={700} height={700}>
-                <Layer>
-                  <CustomRect />
-                </Layer>
-            </Stage>
+            <div className="canv">
+                <Stage width={800} height={600}>
+                    <Layer>
+                      {this.renderRect()}
+                    </Layer>
+                </Stage>
+            </div>
         );
     };
 };
