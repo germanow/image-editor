@@ -37,7 +37,6 @@ export default class Canv extends React.Component {
                         onDragMove={(e) => this.props.handleDragMove(e, rect.id)}
                         onDragEnd={(e) => this.props.handleDragEnd(e, rect.id)}
                     >
-                        <Selected canvas={this.props.canvas}  size={1}/>
                         <Rect
                             x={0}
                             y={0}
@@ -46,6 +45,7 @@ export default class Canv extends React.Component {
                             height={rect.height}
                             fill={rect.color}
                         />
+                        <Selected canvas={this.props.canvas}  size={1}/>
                     </Group>
                 );
             } else {

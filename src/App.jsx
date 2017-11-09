@@ -62,6 +62,7 @@ class App extends React.Component {
     }
     
     handleDragEnd(e, id){
+        //Save new coordinate of rectangle in react state
         this.setState(prevstate => {
             let rects = Object.assign({}, prevstate.canvas.rects);
             let rect = rects[id];
@@ -81,6 +82,7 @@ class App extends React.Component {
     }
     
     handleClick(e, id) {
+        //Select element on click
         this.setState(prevstate => {
             return {
                 canvas:{
