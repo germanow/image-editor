@@ -1,2 +1,3 @@
-# react-image-editor
-Small editor on react
+# Image-editor
+
+Image editor on javascript
