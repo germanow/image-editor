@@ -25,7 +25,8 @@ class App extends React.Component {
                         color: "green"
                     }
                 },
-                selected: "1"
+                selected: "1",
+                resize: false
             }
         };
     };
@@ -76,7 +77,7 @@ class App extends React.Component {
             };
         });
     }
-    
+
     handleDragMove(e, id) {
         
     }
@@ -93,7 +94,34 @@ class App extends React.Component {
         });
     }
     
+    handleResizeState(resize) {
+        this.setState(prevstate => {
+            let newState = Object.assign({}, prevstate);
+            newState.canvas.resize = resize;
+            return newState;
+        });
+    }
     
+    handleResizeMove(e, circle) {
+        switch (circle){
+            case 'topLeft':
+                this.setState(prevstate => {
+                    let rects = Object.assign({}, prevstate.canvas.rects);
+                    let rect = rects[this.state.canvas.selected];
+                    rect.x += e.evt.movementX;
+                    rect.y += e.evt.movementY;
+                    rect.width -= e.evt.movementX;
+                    rect.height -= e.evt.movementY;
+                    return {
+                        canvas:{
+                            rects: rects,
+                            selected: prevstate.canvas.selected
+                        }
+                    };
+                });
+                break;
+        }
+    }
     
     render() {
         return (
@@ -107,6 +135,10 @@ class App extends React.Component {
                     handleDragEnd={this.handleDragEnd.bind(this)}
                     handleDragMove={this.handleDragMove.bind(this)}
                     handleClick={this.handleClick.bind(this)}
+                    handleResizeState={this.handleResizeState.bind(this)}
+                    handleResizeMove={this.handleResizeMove.bind(this)}
+                    selectedRef={refs => this.selectedRef = refs}
+                    layerRef={refs => this.layerRef = refs}
                 />
             </div>
         );

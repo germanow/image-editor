@@ -6,6 +6,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Layer, Rect, Stage, Group} from 'react-konva';
 
+import generateId from './generateId.js'
+
 import Selected from './Selected.jsx';
 
 export default class Canv extends React.Component {
@@ -22,6 +24,7 @@ export default class Canv extends React.Component {
         
     };
     
+    
     renderRect(){
         let rects = this.props.canvas.rects;
         let res = [];
@@ -30,22 +33,31 @@ export default class Canv extends React.Component {
             if(this.props.canvas.selected == id){
                 res.push(
                     <Group
+                        key={rect.id}
                         x={rect.x}
                         y={rect.y}
-                        draggable={true} 
+                        draggable={!this.props.canvas.resize} 
                         onClick={(e) => this.props.handleClick(e, rect.id)}
                         onDragMove={(e) => this.props.handleDragMove(e, rect.id)}
-                        onDragEnd={(e) => this.props.handleDragEnd(e, rect.id)}
+                        onDragEnd={ !this.props.canvas.resize ? (e) => this.props.handleDragEnd(e, rect.id) : null}
                     >
                         <Rect
+                            key={rect.id}
+                            ref={this.props.selectedRef}
                             x={0}
                             y={0}
-                            key={rect.id}
                             width={rect.height}
                             height={rect.height}
                             fill={rect.color}
                         />
-                        <Selected canvas={this.props.canvas}  size={1}/>
+                        <Selected 
+                            key={rect.id*2}
+                            canvas={this.props.canvas}  
+                            size={1} 
+                            handleResizeState={this.props.handleResizeState}
+                            handleResizeMove={this.props.handleResizeMove}
+                            resize={this.props.canvas.resize}
+                        />
                     </Group>
                 );
             } else {
@@ -73,7 +85,7 @@ export default class Canv extends React.Component {
         return (
             <div className="canv">
                 <Stage width={800} height={600}>
-                    <Layer>
+                    <Layer ref={this.props.layerRef}>
                       {this.renderRect()}
                     </Layer>
                 </Stage>
