@@ -3,3 +3,6 @@
     width: 800px;
     height: 600px;
 }
+.file-input {
+    opacity:0;
+}

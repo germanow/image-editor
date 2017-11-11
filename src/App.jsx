@@ -4,6 +4,7 @@ import './css/main.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import fbric from 'fabric';
 
 import generateId from './generateId.js'
 
@@ -14,20 +15,9 @@ class App extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            canvas:{
-                rects:{
-                    "1":{
-                        id: 1,
-                        x:0,
-                        y:0,
-                        width:100,
-                        height:100,
-                        color: "green"
-                    }
-                },
-                selected: "1",
-                resize: false
-            }
+            canvasWidth:800,
+            canvasHeight:600,
+            defaultElementSize: 100
         };
     };
     
@@ -40,87 +30,46 @@ class App extends React.Component {
     };
     
     handleAddRectangle(){
-        let id = generateId();
-        let rect = {
-            id: id,
-            x:0,
-            y:0,
-            width:"100",
-            height:"100",
-            color: "black"
-        };
-        
-        this.setState(prevstate => {
-            let rects = Object.assign({}, prevstate.canvas.rects);
-            rects[id] = rect;
-            return {
-                canvas:{
-                    rects: rects,
-                    selected: id
-                }
-            };
+        let rect = new fabric.Rect({
+            left: 100,
+            top: 100,
+            fill: 'black',
+            width: this.state.defaultElementSize,
+            height: this.state.defaultElementSize
         });
+        this.canvas.add(rect);
     }
     
-    handleDragEnd(e, id){
-        //Save new coordinate of rectangle in react state
-        this.setState(prevstate => {
-            let rects = Object.assign({}, prevstate.canvas.rects);
-            let rect = rects[id];
-            rect.x = e.target.attrs.x;
-            rect.y = e.target.attrs.y;
-            return {
-                canvas:{
-                    rects: rects,
-                    selected: prevstate.canvas.selected
-                }
-            };
+    handleAddCircle(){
+        let circle = new fabric.Circle({
+            left: 100,
+            top: 100,
+            fill: 'black',
+            radius: this.state.defaultElementSize/2
         });
-    }
-
-    handleDragMove(e, id) {
-        
+        this.canvas.add(circle);
     }
     
-    handleClick(e, id) {
-        //Select element on click
-        this.setState(prevstate => {
-            return {
-                canvas:{
-                    rects: prevstate.canvas.rects,
-                    selected: id
-                }
-            };
-        });
-    }
-    
-    handleResizeState(resize) {
-        this.setState(prevstate => {
-            let newState = Object.assign({}, prevstate);
-            newState.canvas.resize = resize;
-            return newState;
-        });
-    }
-    
-    handleResizeMove(e, circle) {
-        switch (circle){
-            case 'topLeft':
-                this.setState(prevstate => {
-                    let rects = Object.assign({}, prevstate.canvas.rects);
-                    let rect = rects[this.state.canvas.selected];
-                    rect.x += e.evt.movementX;
-                    rect.y += e.evt.movementY;
-                    rect.width -= e.evt.movementX;
-                    rect.height -= e.evt.movementY;
-                    return {
-                        canvas:{
-                            rects: rects,
-                            selected: prevstate.canvas.selected
-                        }
-                    };
-                });
-                break;
-        }
+    handleAddImage(id){
+        let canvasWidth = this.state.canvasWidth;
+        let canvasHeight = this.state.canvasHeight;
+        setTimeout(() => {
+            //To make the picture fit into the canvas
+            let imgElement = document.getElementById(id);
+            let width = imgElement.naturalWidth;
+            let height = imgElement.naturalHeight;
+            while(width > canvasWidth || height > canvasHeight){
+                width = width/2;
+                height = height/2;
+            }
+            let imgInstance = new fabric.Image(imgElement, {
+              left: 0,
+              top: 0,
+              width: width,
+              height:height
+            });
+            this.canvas.add(imgInstance);
+        }, 50);
     }
     
     render() {
@@ -128,17 +77,14 @@ class App extends React.Component {
             <div>
                 <h2>Editor</h2>
                 <ToolBar 
-                    onRectangle={this.handleAddRectangle.bind(this)} 
+                    onAddRectangle={this.handleAddRectangle.bind(this)} 
+                    onAddCircle={this.handleAddCircle.bind(this)} 
+                    onAddImage={this.handleAddImage.bind(this)} 
                 />
                 <Canv 
-                    canvas={this.state.canvas}
-                    handleDragEnd={this.handleDragEnd.bind(this)}
-                    handleDragMove={this.handleDragMove.bind(this)}
-                    handleClick={this.handleClick.bind(this)}
-                    handleResizeState={this.handleResizeState.bind(this)}
-                    handleResizeMove={this.handleResizeMove.bind(this)}
-                    selectedRef={refs => this.selectedRef = refs}
-                    layerRef={refs => this.layerRef = refs}
+                    getCanvas={canvas => this.canvas = canvas}
+                    width={800}
+                    height={600}
                 />
             </div>
         );

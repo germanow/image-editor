@@ -10,12 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
+    "fabric": "^1.7.19",
     "font-awesome": "^4.7.0",
-    "konva": "^1.7.6",
     "prop-types": "^15.6.0",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
-    "react-konva": "^1.5.7-beta",
     "react-reconciler": "^0.2.0"
   },
   "devDependencies": {

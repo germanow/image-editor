@@ -4,11 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Layer, Rect, Stage, Group} from 'react-konva';
 
-import generateId from './generateId.js'
-
-import Selected from './Selected.jsx';
+import generateId from './generateId.js';
 
 export default class Canv extends React.Component {
     constructor(props){
@@ -17,78 +14,33 @@ export default class Canv extends React.Component {
     };
     
     componentDidMount(){
-        
+        //Global settings for resize appearance
+        fabric.Object.prototype.set({
+            cornerStyle: "circle",
+            transparentCorners: false,
+//            borderColor: '#ff00ff',
+//            cornerColor: '#ff0000'
+        });
+        const canvas = new fabric.Canvas('canv', {
+            width: this.props.width,
+            height: this.props.height,
+            backgrounColor: '#eee'
+        });
+        //Pass canvas to parent
+        this.props.getCanvas(canvas);
     };
     
     componentWillUnmount(){
         
     };
     
-    
-    renderRect(){
-        let rects = this.props.canvas.rects;
-        let res = [];
-        for(let id in rects){
-            let rect = rects[id];
-            if(this.props.canvas.selected == id){
-                res.push(
-                    <Group
-                        key={rect.id}
-                        x={rect.x}
-                        y={rect.y}
-                        draggable={!this.props.canvas.resize} 
-                        onClick={(e) => this.props.handleClick(e, rect.id)}
-                        onDragMove={(e) => this.props.handleDragMove(e, rect.id)}
-                        onDragEnd={ !this.props.canvas.resize ? (e) => this.props.handleDragEnd(e, rect.id) : null}
-                    >
-                        <Rect
-                            key={rect.id}
-                            ref={this.props.selectedRef}
-                            x={0}
-                            y={0}
-                            width={rect.height}
-                            height={rect.height}
-                            fill={rect.color}
-                        />
-                        <Selected 
-                            key={rect.id*2}
-                            canvas={this.props.canvas}  
-                            size={1} 
-                            handleResizeState={this.props.handleResizeState}
-                            handleResizeMove={this.props.handleResizeMove}
-                            resize={this.props.canvas.resize}
-                        />
-                    </Group>
-                );
-            } else {
-                res.push(
-                    <Rect
-                        x={rect.x}
-                        y={rect.y}
-                        key={rect.id}
-                        width={rect.height}
-                        height={rect.height}
-                        fill={rect.color}
-                        draggable={false}
-                        onClick={(e) => this.props.handleClick(e, rect.id)}
-                        onDragMove={(e) => this.props.handleDragMove(e, rect.id)}
-                        onDragEnd={(e) => this.props.handleDragEnd(e, rect.id)}
-                    />        
-                );
-            }
-        };
-        return res;
-    }
-    
     render() {
-        
         return (
             <div className="canv">
-                <Stage width={800} height={600}>
-                    <Layer ref={this.props.layerRef}>
-                      {this.renderRect()}
-                    </Layer>
-                </Stage>
+                <canvas 
+                    id="canv"
+                />
+                <div id="images"></div>
             </div>
         );
     };
