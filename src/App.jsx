@@ -38,7 +38,7 @@ class App extends React.Component {
             height: this.state.defaultElementSize
         });
         this.canvas.add(rect);
-    }
+    };
     
     handleAddCircle(){
         let circle = new fabric.Circle({
@@ -48,7 +48,7 @@ class App extends React.Component {
             radius: this.state.defaultElementSize/2
         });
         this.canvas.add(circle);
-    }
+    };
     
     handleAddImage(id){
         let canvasWidth = this.state.canvasWidth;
@@ -70,7 +70,12 @@ class App extends React.Component {
             });
             this.canvas.add(imgInstance);
         }, 50);
-    }
+    };
+    
+    handleDelete(){
+        let element = this.canvas.getActiveObject();
+        this.canvas.remove(element);
+    };
     
     render() {
         return (
@@ -82,6 +87,7 @@ class App extends React.Component {
                     onAddImage={this.handleAddImage.bind(this)} 
                 />
                 <Canv 
+                    onDelete={this.handleDelete.bind(this)}
                     getCanvas={canvas => this.canvas = canvas}
                     width={800}
                     height={600}

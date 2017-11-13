@@ -24,7 +24,7 @@ export default class ToolBar extends React.Component {
     handleImageButton(){
         let imageInput = document.getElementById('image-input');
         imageInput.click();
-    }
+    };
     
     handleChangeImage(e){
         let reader = new FileReader();
@@ -40,8 +40,7 @@ export default class ToolBar extends React.Component {
         };
         reader.onload.bind(this);
         reader.readAsDataURL(e.target.files[0]);
-    }
-    
+    };
     
     render() {
         return (
@@ -55,7 +54,7 @@ export default class ToolBar extends React.Component {
                 <button onClick={this.handleImageButton.bind(this)}>
                     Image
                 </button>
-                <input onChange={this.handleChangeImage.bind(this)} id="image-input" class="file-input" name="img" type="file" accept="image/*"/>
+                <input onChange={this.handleChangeImage.bind(this)} id="image-input" className="file-input" name="img" type="file" accept="image/*"/>
             </div>
         );
     };

@@ -30,13 +30,19 @@ export default class Canv extends React.Component {
         this.props.getCanvas(canvas);
     };
     
+    handleKeyDown(e){
+        if(e.keyCode == 46){
+            this.props.onDelete();
+        }
+    };
+    
     componentWillUnmount(){
         
     };
     
     render() {
         return (
-            <div className="canv">
+            <div className="canv" tabIndex="1" onKeyDown={this.handleKeyDown.bind(this)}>
                 <canvas 
                     id="canv"
                 />
