@@ -7272,13 +7272,21 @@ var App = function (_React$Component) {
     }, {
         key: 'handleDelete',
         value: function handleDelete() {
-            var element = this.canvas.getActiveObject();
-            this.canvas.remove(element);
+            var _this3 = this;
+
+            if (this.canvas.getActiveGroup()) {
+                this.canvas.getActiveGroup().forEachObject(function (o) {
+                    return _this3.canvas.remove(o);
+                });
+                this.canvas.discardActiveGroup().renderAll();
+            } else {
+                this.canvas.remove(this.canvas.getActiveObject());
+            }
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this4 = this;
 
             return _react2.default.createElement(
                 'div',
@@ -7296,7 +7304,7 @@ var App = function (_React$Component) {
                 _react2.default.createElement(_Canv2.default, {
                     onDelete: this.handleDelete.bind(this),
                     getCanvas: function getCanvas(canvas) {
-                        return _this3.canvas = canvas;
+                        return _this4.canvas = canvas;
                     },
                     width: 800,
                     height: 600

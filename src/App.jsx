@@ -26,7 +26,7 @@ class App extends React.Component {
     };
     
     componentWillUnmount(){
-        
+    
     };
     
     handleAddRectangle(){
@@ -73,8 +73,12 @@ class App extends React.Component {
     };
     
     handleDelete(){
-        let element = this.canvas.getActiveObject();
-        this.canvas.remove(element);
+        if(this.canvas.getActiveGroup()){
+            this.canvas.getActiveGroup().forEachObject(o => this.canvas.remove(o));
+            this.canvas.discardActiveGroup().renderAll();
+        } else {
+            this.canvas.remove(this.canvas.getActiveObject());
+        }
     };
     
     render() {
