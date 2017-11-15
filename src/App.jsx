@@ -18,7 +18,7 @@ class App extends React.Component {
             canvasWidth:800,
             canvasHeight:600,
             defaultElementSize: 100,
-            selectedColor: "black"
+            selectedColor: "#000000"
         };
     };
     
@@ -39,7 +39,7 @@ class App extends React.Component {
         let rect = new fabric.Rect({
             left: 100,
             top: 100,
-            fill: 'black',
+            fill: '#000000',
             width: this.state.defaultElementSize,
             height: this.state.defaultElementSize
         });
@@ -50,7 +50,7 @@ class App extends React.Component {
         let circle = new fabric.Circle({
             left: 100,
             top: 100,
-            fill: 'black',
+            fill: '#000000',
             radius: this.state.defaultElementSize/2
         });
         this.canvas.add(circle);
