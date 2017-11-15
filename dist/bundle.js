@@ -7219,11 +7219,12 @@ var App = function (_React$Component) {
     _createClass(App, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this2 = this;
-
             this.canvas.on('object:selected', function (option) {
-                return _this2.setState({ selectedColor: option.target.fill });
-            });
+                var obj = option.target;
+                if (obj.hasOwnProperty('fill')) {
+                    this.setState({ selectedColor: obj.fill });
+                };
+            }.bind(this));
         }
     }, {
         key: 'componentWillUnmount',
@@ -7254,7 +7255,7 @@ var App = function (_React$Component) {
     }, {
         key: 'handleAddImage',
         value: function handleAddImage(id) {
-            var _this3 = this;
+            var _this2 = this;
 
             var canvasWidth = this.state.canvasWidth;
             var canvasHeight = this.state.canvasHeight;
@@ -7273,17 +7274,17 @@ var App = function (_React$Component) {
                     width: width,
                     height: height
                 });
-                _this3.canvas.add(imgInstance);
+                _this2.canvas.add(imgInstance);
             }, 50);
         }
     }, {
         key: 'handleDelete',
         value: function handleDelete() {
-            var _this4 = this;
+            var _this3 = this;
 
             if (this.canvas.getActiveGroup()) {
                 this.canvas.getActiveGroup().forEachObject(function (o) {
-                    return _this4.canvas.remove(o);
+                    return _this3.canvas.remove(o);
                 });
                 this.canvas.discardActiveGroup().renderAll();
             } else {
@@ -7296,19 +7297,23 @@ var App = function (_React$Component) {
             this.setState({ selectedColor: color });
             if (this.canvas.getActiveGroup()) {
                 this.canvas.getActiveGroup().forEachObject(function (obj) {
-                    return obj.setColor(color);
+                    if (obj.hasOwnProperty('fill')) {
+                        obj.setColor(color);
+                    };
                 });
                 this.canvas.renderAll();
             } else if (this.canvas.getActiveObject()) {
                 var obj = this.canvas.getActiveObject();
-                obj.setColor(color);
+                if (obj.hasOwnProperty('fill')) {
+                    obj.setColor(color);
+                };
                 this.canvas.renderAll();
             };
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this5 = this;
+            var _this4 = this;
 
             return _react2.default.createElement(
                 'div',
@@ -7328,7 +7333,7 @@ var App = function (_React$Component) {
                 _react2.default.createElement(_Canv2.default, {
                     onDelete: this.handleDelete.bind(this),
                     getCanvas: function getCanvas(canvas) {
-                        return _this5.canvas = canvas;
+                        return _this4.canvas = canvas;
                     },
                     width: 800,
                     height: 600

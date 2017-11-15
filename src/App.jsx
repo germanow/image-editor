@@ -23,7 +23,12 @@ class App extends React.Component {
     };
     
     componentDidMount(){
-        this.canvas.on('object:selected', (option) => this.setState({selectedColor:option.target.fill}));
+        this.canvas.on('object:selected', (function(option){
+            let obj = option.target;
+            if(obj.hasOwnProperty('fill')){
+                this.setState({selectedColor:obj.fill});
+            };
+        }).bind(this));
     };
     
     componentWillUnmount(){
@@ -85,11 +90,17 @@ class App extends React.Component {
     handleChangeColor(color){
         this.setState({selectedColor:color});
         if(this.canvas.getActiveGroup()){
-            this.canvas.getActiveGroup().forEachObject(obj => obj.setColor(color));
+            this.canvas.getActiveGroup().forEachObject(function(obj){
+                if(obj.hasOwnProperty('fill')){
+                    obj.setColor(color);
+                };
+            });
             this.canvas.renderAll();
         } else if(this.canvas.getActiveObject()) {
             let obj = this.canvas.getActiveObject();
-            obj.setColor(color);
+            if(obj.hasOwnProperty('fill')){
+                obj.setColor(color);
+            };
             this.canvas.renderAll();
         };
     };
