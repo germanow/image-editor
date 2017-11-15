@@ -17,12 +17,13 @@ class App extends React.Component {
         this.state = {
             canvasWidth:800,
             canvasHeight:600,
-            defaultElementSize: 100
+            defaultElementSize: 100,
+            selectedColor: "black"
         };
     };
     
     componentDidMount(){
-        
+        this.canvas.on('object:selected', (option) => this.setState({selectedColor:option.target.fill}));
     };
     
     componentWillUnmount(){
@@ -82,6 +83,7 @@ class App extends React.Component {
     };
     
     handleChangeColor(color){
+        this.setState({selectedColor:color});
         if(this.canvas.getActiveGroup()){
             this.canvas.getActiveGroup().forEachObject(obj => obj.setColor(color));
             this.canvas.renderAll();
@@ -101,6 +103,7 @@ class App extends React.Component {
                     onAddCircle={this.handleAddCircle.bind(this)} 
                     onAddImage={this.handleAddImage.bind(this)} 
                     onChangeColor={this.handleChangeColor.bind(this)}
+                    selectedColor={this.state.selectedColor}
                 />
                 <Canv 
                     onDelete={this.handleDelete.bind(this)}

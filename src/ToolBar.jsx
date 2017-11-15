@@ -61,7 +61,7 @@ export default class ToolBar extends React.Component {
                 <button onClick={this.handleImageButton.bind(this)}>
                     Image
                 </button>
-                <input onChange={this.handleChangeColor.bind(this)} name="color" type="color"/>
+                <input onChange={this.handleChangeColor.bind(this)} id="color-palette" name="color" type="color" value={this.props.selectedColor}/>
             </div>
         );
     };
