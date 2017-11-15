@@ -81,6 +81,17 @@ class App extends React.Component {
         }
     };
     
+    handleChangeColor(color){
+        if(this.canvas.getActiveGroup()){
+            this.canvas.getActiveGroup().forEachObject(obj => obj.setColor(color));
+            this.canvas.renderAll();
+        } else if(this.canvas.getActiveObject()) {
+            let obj = this.canvas.getActiveObject();
+            obj.setColor(color);
+            this.canvas.renderAll();
+        };
+    };
+    
     render() {
         return (
             <div>
@@ -89,6 +100,7 @@ class App extends React.Component {
                     onAddRectangle={this.handleAddRectangle.bind(this)} 
                     onAddCircle={this.handleAddCircle.bind(this)} 
                     onAddImage={this.handleAddImage.bind(this)} 
+                    onChangeColor={this.handleChangeColor.bind(this)}
                 />
                 <Canv 
                     onDelete={this.handleDelete.bind(this)}

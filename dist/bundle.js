@@ -7284,6 +7284,20 @@ var App = function (_React$Component) {
             }
         }
     }, {
+        key: 'handleChangeColor',
+        value: function handleChangeColor(color) {
+            if (this.canvas.getActiveGroup()) {
+                this.canvas.getActiveGroup().forEachObject(function (obj) {
+                    return obj.setColor(color);
+                });
+                this.canvas.renderAll();
+            } else if (this.canvas.getActiveObject()) {
+                var obj = this.canvas.getActiveObject();
+                obj.setColor(color);
+                this.canvas.renderAll();
+            };
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this4 = this;
@@ -7299,7 +7313,8 @@ var App = function (_React$Component) {
                 _react2.default.createElement(_ToolBar2.default, {
                     onAddRectangle: this.handleAddRectangle.bind(this),
                     onAddCircle: this.handleAddCircle.bind(this),
-                    onAddImage: this.handleAddImage.bind(this)
+                    onAddImage: this.handleAddImage.bind(this),
+                    onChangeColor: this.handleChangeColor.bind(this)
                 }),
                 _react2.default.createElement(_Canv2.default, {
                     onDelete: this.handleDelete.bind(this),
@@ -7360,7 +7375,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, ".canv {\n    border: 1px solid #000000;\n    width: 800px;\n    height: 600px;\n}\n.file-input {\n    opacity:0;\n}", ""]);
+exports.push([module.i, ".canv {\n    border: 1px solid #000000;\n    width: 800px;\n    height: 600px;\n}\n.file-input {\n    opacity:0;\n    display: none;\n}", ""]);
 
 // exports
 
@@ -53973,6 +53988,12 @@ var ToolBar = function (_React$Component) {
             reader.readAsDataURL(e.target.files[0]);
         }
     }, {
+        key: 'handleChangeColor',
+        value: function handleChangeColor(e) {
+            var color = e.target.value;
+            this.props.onChangeColor(color);
+        }
+    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
@@ -53988,12 +54009,13 @@ var ToolBar = function (_React$Component) {
                     { onClick: this.props.onAddCircle },
                     'Circle'
                 ),
+                _react2.default.createElement('input', { onChange: this.handleChangeImage.bind(this), id: 'image-input', className: 'file-input', name: 'img', type: 'file', accept: 'image/*' }),
                 _react2.default.createElement(
                     'button',
                     { onClick: this.handleImageButton.bind(this) },
                     'Image'
                 ),
-                _react2.default.createElement('input', { onChange: this.handleChangeImage.bind(this), id: 'image-input', className: 'file-input', name: 'img', type: 'file', accept: 'image/*' })
+                _react2.default.createElement('input', { onChange: this.handleChangeColor.bind(this), name: 'color', type: 'color' })
             );
         }
     }]);
